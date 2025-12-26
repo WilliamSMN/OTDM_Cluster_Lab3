@@ -8,32 +8,76 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from solveur_cluster_median import solve_cluster_median
+from prepare_benchmark_data import generate_benchmark_data
+from solveur_cluster_median import solve_cluster_median, plot_clusters as plot_opt
 from heuristic_cluster_median import (
     build_mst, cut_longest,
-    extract_clusters, compute_objective
+    extract_clusters, compute_objective,
+    plot_clusters as plot_heur
 )
 
 
 def main():
     BASE = Path(__file__).resolve().parent
-    points = np.load(BASE / "benchmark_points.npy")
-    k = 3
 
-    # Exact
-    obj_opt, cpu_opt, _, _ = solve_cluster_median(
+    # ======================
+    # BENCHMARK PARAMETERS
+    # ======================
+    k = 15
+    sample_ratio = 0.5
+    seed = 42
+
+    # ======================
+    # Generate data
+    # ======================
+    points, D, m = generate_benchmark_data(
+        sample_ratio=sample_ratio,
+        k=k,
+        seed=seed,
+        base_dir=BASE
+    )
+
+    # ======================
+    # Exact AMPL
+    # ======================
+    obj_opt, cpu_opt, assign_opt, k_opt = solve_cluster_median(
         "cluster_median.mod",
         "benchmark.dat"
     )
 
-    # Heuristic
+    # Safety check (important)
+    assert k_opt == k, "Mismatch between benchmark k and AMPL k!"
+
+    plot_opt(
+        points,
+        assign_opt,
+        k_opt,
+        obj_opt,
+        filename="benchmark_optimal_clusters.png"
+    )
+
+
+    # ======================
+    # Heuristic MST
+    # ======================
     start = time.time()
     mst, D = build_mst(points)
     mst_cut, _ = cut_longest(mst, k)
     clusters = extract_clusters(mst_cut)
-    obj_heur, _ = compute_objective(D, clusters)
+    obj_heur, assign_heur = compute_objective(D, clusters)
     cpu_heur = time.time() - start
 
+    plot_heur(
+        points,
+        assign_heur,
+        k,
+        obj_heur,
+        filename="benchmark_heuristic_clusters.png"
+    )
+
+    # ======================
+    # Comparison table
+    # ======================
     gap = 100 * (obj_heur - obj_opt) / obj_opt
 
     df = pd.DataFrame([
@@ -43,6 +87,9 @@ def main():
 
     print(df)
 
+    # ======================
+    # Objective bar plot
+    # ======================
     plt.figure(figsize=(6, 4))
     plt.bar(df["Method"], df["Objective"])
     plt.ylabel("Cluster-median objective")

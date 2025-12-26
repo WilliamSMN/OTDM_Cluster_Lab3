@@ -9,7 +9,7 @@ from pathlib import Path
 import time
 
 
-def plot_clusters(points, assign, k, obj):
+def plot_clusters(points, assign, k, obj, filename="solveur_clusters.png"):
     colors = plt.cm.tab10.colors
     plt.figure(figsize=(8, 6))
 
@@ -24,8 +24,9 @@ def plot_clusters(points, assign, k, obj):
     plt.title(f"AMPL optimal clustering (k={k})\nObjective = {obj:.3f}")
     plt.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig("solveur_clusters.png", dpi=300)
+    plt.savefig(filename, dpi=300)
     plt.close()
+
 
 
 def solve_cluster_median(mod_file, dat_file):
@@ -52,16 +53,3 @@ def solve_cluster_median(mod_file, dat_file):
     return obj, cpu, assign, k
 
 
-if __name__ == "__main__":
-    BASE = Path(__file__).resolve().parent
-
-    points = np.load(BASE / "benchmark_points.npy")
-    obj, cpu, assign, k = solve_cluster_median(
-        "cluster_median.mod",
-        "benchmark.dat"
-    )
-
-    print("AMPL objective:", obj)
-    print("CPU time:", cpu)
-
-    plot_clusters(points, assign, k, obj)

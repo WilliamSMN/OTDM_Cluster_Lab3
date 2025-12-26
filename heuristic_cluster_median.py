@@ -70,9 +70,10 @@ def compute_objective(D, clusters):
     return obj, assign
 
 
-def plot_clusters(points, assign, k, obj):
+def plot_clusters(points, assign, k, obj, filename="heuristic_clusters.png"):
     colors = plt.cm.tab10.colors
     plt.figure(figsize=(8, 6))
+
     for idx, c in enumerate(np.unique(assign)):
         pts = np.where(assign == c)[0]
         col = colors[idx % len(colors)]
@@ -80,27 +81,10 @@ def plot_clusters(points, assign, k, obj):
         plt.scatter(points[c, 0], points[c, 1],
                     marker="*", s=300, color=col,
                     edgecolor="black")
+
     plt.title(f"MST heuristic clustering (k={k})\nObjective = {obj:.3f}")
     plt.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig("heuristic_clusters.png", dpi=300)
+    plt.savefig(filename, dpi=300)
     plt.close()
 
-
-if __name__ == "__main__":
-    BASE = Path(__file__).resolve().parent
-    points = np.load(BASE / "benchmark_points.npy")
-
-    k = 5
-    start = time.time()
-
-    mst, D = build_mst(points)
-    mst_cut, _ = cut_longest(mst, k)
-    clusters = extract_clusters(mst_cut)
-    obj, assign = compute_objective(D, clusters)
-
-    cpu = time.time() - start
-    print("MST objective:", obj)
-    print("CPU time:", cpu)
-
-    plot_clusters(points, assign, k, obj)
