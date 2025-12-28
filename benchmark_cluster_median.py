@@ -17,8 +17,8 @@ def main():
     BASE = Path(__file__).resolve().parent
 
     # BENCHMARK PARAMETERS
-    k = 12 #depends on the dataset used
-    sample_ratio = 0.5
+    k = 13 #depends on the dataset used
+    sample_ratio = 0.25
     seed = 42
 
     print("- Generate data")
@@ -26,6 +26,7 @@ def main():
         sample_ratio=sample_ratio,
         k=k,
         seed=seed,
+        arff_file= "./data_processing/datasets/arrhythmia.arff",
         base_dir=BASE
     )
 
