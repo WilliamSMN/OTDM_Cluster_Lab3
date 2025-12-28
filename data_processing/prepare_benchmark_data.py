@@ -20,7 +20,8 @@ def generate_benchmark_data(
 
     if arff_file is None:
         arff_file = base_dir / "data_processing/datasets/2d-3c-no123.arff"
-
+        
+    print("Using dataset : " + arff_file)
     # Load data
     data, _ = arff_io.loadarff(arff_file)
     points_all = np.array([[float(r[0]), float(r[1])] for r in data])
