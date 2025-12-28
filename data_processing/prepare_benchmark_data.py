@@ -1,5 +1,3 @@
-# prepare_benchmark_data.py
-
 import numpy as np
 from pathlib import Path
 from scipy.io import arff as arff_io
@@ -35,7 +33,7 @@ def generate_benchmark_data(
     D = pairwise_distances(points)
 
     # Save points
-    np.save(base_dir / "benchmark_points.npy", points)
+    #np.save(base_dir / "benchmark_points.npy", points)
 
     # Write AMPL .dat
     lines = []

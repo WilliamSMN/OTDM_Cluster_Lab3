@@ -1,7 +1,3 @@
-# ============================================================
-# solveur_cluster_median.py
-# ============================================================
-
 from amplpy import AMPL
 import numpy as np
 import matplotlib.pyplot as plt
