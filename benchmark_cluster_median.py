@@ -17,16 +17,17 @@ def main():
     BASE = Path(__file__).resolve().parent
 
     # BENCHMARK PARAMETERS
-    k = 13 #depends on the dataset used
-    sample_ratio = 0.25
+    k = 10 #depends on the dataset used
+    sample_ratio = 1
     seed = 42
+    dataset_name = "cpu"
 
     print("- Generate data")
     points, D, m = generate_benchmark_data(
         sample_ratio=sample_ratio,
         k=k,
         seed=seed,
-        arff_file= "./data_processing/datasets/arrhythmia.arff",
+        arff_file= "./data_processing/datasets/"+ dataset_name +".arff",
         base_dir=BASE
     )
 
@@ -44,7 +45,7 @@ def main():
         assign_opt,
         k_opt,
         obj_opt,
-        filename="benchmark_optimal_clusters.png"
+        filename="./Plot_Results/benchmark_"+ dataset_name +"_optimal_clusters.png"
     )
 
     print("- Computing MST heuristic")
@@ -60,7 +61,7 @@ def main():
         assign_heur,
         k,
         obj_heur,
-        filename="benchmark_heuristic_clusters.png"
+        filename="./Plot_Results/benchmark_"+ dataset_name +"_heuristic_clusters.png"
     )
 
     # Comparison table
@@ -80,7 +81,7 @@ def main():
     plt.title("Objective comparison (same data)")
     plt.grid(axis="y", alpha=0.3)
     plt.tight_layout()
-    plt.savefig("benchmark_objective_comparison.png", dpi=300)
+    plt.savefig("./Plot_Results/benchmark_"+ dataset_name +"_objective_comparison.png", dpi=300)
     plt.close()
 
 
