@@ -17,7 +17,7 @@ def main():
     BASE = Path(__file__).resolve().parent
 
     # BENCHMARK PARAMETERS
-    k = 10 #depends on the dataset used
+    k = 12
     sample_ratio = 1
     seed = 42
     dataset_name = "cpu"
@@ -40,29 +40,33 @@ def main():
     # Safety check (important)
     assert k_opt == k, "Mismatch between benchmark k and AMPL k!"
 
-    plot_opt(
-        points,
-        assign_opt,
-        k_opt,
-        obj_opt,
-        filename="./Plot_Results/benchmark_"+ dataset_name +"_optimal_clusters.png"
-    )
+    dim = points.shape[1]
+
+    if dim == 2:
+        plot_opt(
+            points, assign_opt, k_opt, obj_opt,
+            filename="./Plot_Results/benchmark_"+dataset_name+"_optimal_clusters.png"
+        )
+    else:
+        print("Skipping optimal cluster plot (dimension > 2)")
+
 
     print("- Computing MST heuristic")
     start = time.time()
-    mst, D = build_mst(points)
+    mst, D_mst = build_mst(points)
     mst_cut, _ = cut_longest(mst, k)
     clusters = extract_clusters(mst_cut)
-    obj_heur, assign_heur = compute_objective(D, clusters)
+    obj_heur, assign_heur = compute_objective(D_mst, clusters)
     cpu_heur = time.time() - start
 
-    plot_heur(
-        points,
-        assign_heur,
-        k,
-        obj_heur,
-        filename="./Plot_Results/benchmark_"+ dataset_name +"_heuristic_clusters.png"
-    )
+    if dim == 2:
+        plot_heur(
+            points, assign_heur, k, obj_heur,
+            filename="./Plot_Results/benchmark_"+dataset_name+"_heuristic_clusters.png"
+        )
+    else:
+        print("Skipping heuristic cluster plot (dimension > 2)")
+
 
     # Comparison table
     gap = 100 * (obj_heur - obj_opt) / obj_opt
